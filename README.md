@@ -1,5 +1,5 @@
 # Forex_AlgoTrading
-##Introduction
+## Introduction
 Forex_AlgoTrading is a Forex Strategy Backtest tools based on Event Drive Modelã€‚Comparing with MT4,which is the most popular used platform ,Forex_AlgoTrading has several advantages:
 1.  It supports **multiple symbols backtest**.
 2.  **Sharp ration** calculation supported.
@@ -7,14 +7,13 @@ Forex_AlgoTrading is a Forex Strategy Backtest tools based on Event Drive Modelã
 4.  **Spread and commission** customization supported.  
 5.  **Parameters optimization** is supported using multiprocessing.(Not finished yet)
 6.  The Strategy API is open soured and you can use any tech you want like AI and so on.
----
 
-##Environment Required:
-Anaconda of **python 2.7 version** is recommended.\
+## Environment Required:
+Anaconda of python 2.7 version is recommended.
 You can also use requirement file to install the packages required,but you need to install other packages when you use other tools like scikit-learn.
----
-##QuickStart
-###About Event Engine
+
+## QuickStart
+### About Event Engine
 There are several typed if event are defined as follow:
 1.  **MarketEvent** should be put into queue when new bar data received.
 2.  **OrderSendEvent**should be put into queue when new order created.
@@ -35,7 +34,7 @@ elif event.type == EventType.ORDER_CLOSE:
 elif event.type == EventType.ORDER_MODIFY:
     self.portfolio.update_order(event)
 ```
-###Demo code for startegy backtest
+### Demo code for startegy backtest
 The following code implements a simple moving average cross startegy:
 ```angular2html
 # encoding=utf-8
@@ -105,8 +104,13 @@ if __name__ == '__main__':
     backtest.simulate_trading()
 
 ```
+The graph including the equity and drawdown curve is shown after the backtest is done.\
+![Graph for MA Cross](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/MA_Cross.png)\
+There is another graph from my own strategy.\
+![Graph for Trend Strategy](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Trend.png)
+
 You need to define your startegy class inheriting from Strategy and rewrite the method **On_Bars** where you should implement you  logics for sending the order,modifying the order or closing the orders.
- ###Deme code for parameters optimization
+ ### Deme code for parameters optimization
 ```angular2html
 if __name__ == '__main__':
     csv_dir = 'D:\PythonCode\Forex_AlgoTrading\\'
@@ -134,8 +138,8 @@ if __name__ == '__main__':
     optimization.parameter_optimization()
 ```
 Comparing to the demo code for strategy backtest,we create a instance of Grid_Search and do the iteration using the parameters groups created by product.The parameters list,sharp ration and equity will be stored in CSV file after optimization done.\
-You can refer to the complete code in [poly.py](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Strategy/poly.py)\
-##Things need to be done
+You can refer to the complete code in [poly.py](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Strategy/poly.py)
+## Things need to be done
 1.  API for drawing the heatmap of optimization reaults.
 2.  API for connecting to OANDA platform.
 3.  API for dealing with tick data in DataHandler.
