@@ -1,5 +1,4 @@
 # encoding=utf8
-# 事件驱动模块，用于定义不同的时间类型类，封装需要的参数。
 from Enums.Enum import EventType
 
 
@@ -16,7 +15,7 @@ class MarketEvent(Event):
     """
 
     def __init__(self):
-        self.type = EventType.MARKET.value
+        self.type = EventType.MARKET
 
 
 class OrderSendEvent(Event):
@@ -26,7 +25,7 @@ class OrderSendEvent(Event):
     """
 
     def __init__(self, symbol, order_type, lot, stoploss, takeprofit, opentime, status, openprice, spread):
-        self.type = EventType.ORDER_SEND.value
+        self.type = EventType.ORDER_SEND
         self.symbol = symbol
         self.order_type = order_type
         self.lot = lot
@@ -54,7 +53,7 @@ class OrderCloseEvent(Event):
     """
 
     def __init__(self, symbol, order_type, index, closetime, closeprice):
-        self.type = EventType.ORDER_CLOSE.value
+        self.type = EventType.ORDER_CLOSE
         self.symbol = symbol
         self.order_type = order_type
         self.index = index
@@ -77,7 +76,7 @@ class OrderModifyEvent(Event):
     """
 
     def __init__(self, symbol, order_type, index, info):
-        self.type = EventType.ORDER_MODIFY.value
+        self.type = EventType.ORDER_MODIFY
         self.symbol = symbol
         self.order_type = order_type
         self.index = index

@@ -13,7 +13,8 @@ class Portfolio(object):
     The class is used for record the equity ,drawdown,update order info during the backtest operation.
     """
 
-    def __init__(self, bars, event, init_captical, startdate, strategy_id, spread, commission):
+    def __init__(self, bars, event, init_captical, startdate, strategy_id, spread, commission,csv_dir):
+        self.csv_dir=csv_dir
         self.startdate = startdate
         self.bars = bars
         self.symbol_list = bars.symbol_list
@@ -48,7 +49,7 @@ class Portfolio(object):
         for s in self.symbol_list:
             new_price = self.bars.get_latest_bar_value(s, 'Open')
             mount += \
-                self.order[(self.order['status'] == OrderStatus.CLOSED.value) & (self.order['symbol'] == s)].iloc[-1:][
+                self.order[(self.order['status'] == OrderStatus.CLOSED) & (self.order['symbol'] == s)].iloc[-1:][
                     'mount'].values[0]
         new_data = pd.DataFrame(
             [[self.bars.get_latest_bar_datetime(self.symbol_list[0]), last_equity + mount, last_equity + mount]],
@@ -64,11 +65,11 @@ class Portfolio(object):
         for s in self.symbol_list:
             new_price = self.bars.get_latest_bar_value(s, 'Open')
             for index in self.order[
-                (self.order['symbol'] == s) & (self.order['status'] == OrderStatus.HOLDING.value)].iterrows():
-                if (index[-1]['type'] == OrderType.BUY.value):
+                (self.order['symbol'] == s) & (self.order['status'] == OrderStatus.HOLDING)].iterrows():
+                if (index[-1]['type'] == OrderType.BUY):
                     mount += ((new_price - index[-1]['openprice']) * index[-1]['lot'] * 100000 - index[-1][
                         'lot'] * self.commission)
-                if (index[-1]['type'] == OrderType.SELL.value):
+                if (index[-1]['type'] == OrderType.SELL):
                     mount += ((index[-1]['openprice'] - new_price - self.spread) * index[-1]['lot'] * 100000 -
                               index[-1]['lot'] * self.commission)
         if len(self.equity.index != 0):
@@ -94,41 +95,41 @@ class Portfolio(object):
         If it's a Order_Close event,update the order info and calculate the mount of this closed order.
         :return:
         """
-        if (event.type == EventType.ORDER_SEND.value):
+        if (event.type == EventType.ORDER_SEND):
             order_info = event
             openprice = order_info.openprice
-            if (order_info.order_type == OrderType.BUY.value):
+            if (order_info.order_type == OrderType.BUY):
                 order_info.openprice = openprice + self.spread
 
             new_order = pd.DataFrame([[order_info.symbol, order_info.lot, order_info.order_type, order_info.opentime, 0,
                                        order_info.openprice, 0, order_info.stoploss, order_info.takeprofit,
-                                       OrderStatus.HOLDING.value, 0]], columns=self.order_list)
+                                       OrderStatus.HOLDING, 0]], columns=self.order_list)
 
             self.order = self.order.append(new_order, ignore_index=True)
-        if (event.type == EventType.ORDER_CLOSE.value):
+        if (event.type == EventType.ORDER_CLOSE):
             old_order = self.order.ix[event.index]
-            if (old_order['type'] == OrderType.BUY.value):
+            if (old_order['type'] == OrderType.BUY):
                 mount = ((event.closeprice - old_order['openprice']) * old_order['lot'] * 100000 - old_order[
                     'lot'] * self.commission)
                 self.order['mount'][event.index] = mount
                 self.order['closeprice'][event.index] = event.closeprice
                 self.order['closetime'][event.index] = event.closetime
-                self.order['status'][event.index] = OrderStatus.CLOSED.value
+                self.order['status'][event.index] = OrderStatus.CLOSED
 
-            if (old_order['type'] == OrderType.SELL.value):
+            if (old_order['type'] == OrderType.SELL):
                 mount = ((old_order['openprice'] - event.closeprice) * old_order['lot'] * 100000 - old_order[
                     'lot'] * self.commission)
                 self.order['mount'][event.index] = mount
                 self.order['closeprice'][event.index] = event.closeprice
                 self.order['closetime'][event.index] = event.closetime
-                self.order['status'][event.index] = OrderStatus.CLOSED.value
+                self.order['status'][event.index] = OrderStatus.CLOSED
 
     def all_holding_orders(self, event, type):
         """
         Return all the holding orders info
         :return:
         """
-        return self.order[self.order['status'] == OrderStatus.HOLDING.value]
+        return self.order[self.order['status'] == OrderStatus.HOLDING]
 
     def all_holding_buy_orders(self):
         """
@@ -136,7 +137,7 @@ class Portfolio(object):
         :return:
         """
         return self.order[
-            (self.order['status'] == OrderStatus.HOLDING.value) & (self.order['type'] == OrderType.BUY.value)]
+            (self.order['status'] == OrderStatus.HOLDING) & (self.order['type'] == OrderType.BUY)]
 
     def all_holding_sell_orders(self):
         """
@@ -144,7 +145,7 @@ class Portfolio(object):
         :return:
         """
         return self.order[
-            (self.order['status'] == OrderStatus.HOLDING.value) & (self.order['type'] == OrderType.SELL.value)]
+            (self.order['status'] == OrderStatus.HOLDING) & (self.order['type'] == OrderType.SELL)]
 
     def last_order(self, type):
         """
@@ -152,7 +153,7 @@ class Portfolio(object):
         :param type:
         :return: pd.Series数据类型
         """
-        return self.order[(self.order['status'] == OrderStatus.HOLDING.value) & (self.order['type'] == type)].iloc[-1,
+        return self.order[(self.order['status'] == OrderStatus.HOLDING) & (self.order['type'] == type)].iloc[-1,
                :]
 
     def all_orders(self, event):
@@ -168,7 +169,7 @@ class Portfolio(object):
         :param type:
         :return:
         """
-        order = self.order[(self.order['status'] == OrderStatus.HOLDING.value) & (self.order['type'] == type)]
+        order = self.order[(self.order['status'] == OrderStatus.HOLDING) & (self.order['type'] == type)]
         res = len(order.index)
         return res
 
@@ -182,28 +183,28 @@ class Portfolio(object):
             low = self.bars.get_latest_bar_value(s, 'Low')
             high = self.bars.get_latest_bar_value(s, 'High')
             for order in self.order[
-                (self.order['status'] == OrderStatus.HOLDING.value) & (
-                        self.order['type'] == OrderType.BUY.value)].iterrows():
+                (self.order['status'] == OrderStatus.HOLDING) & (
+                        self.order['type'] == OrderType.BUY)].iterrows():
                 stoploss = order[-1]['stoploss']
                 profit = order[-1]['takeprofit']
                 if (low <= stoploss):
-                    order_close = OrderCloseEvent(s, OrderType.BUY.value, order[0],
+                    order_close = OrderCloseEvent(s, OrderType.BUY, order[0],
                                                   self.bars.get_latest_bar_datetime(s), stoploss)
                     self.event.put(order_close)
                 if (high >= profit):
-                    order_close = OrderCloseEvent(s, OrderType.BUY.value, order[0],
+                    order_close = OrderCloseEvent(s, OrderType.BUY, order[0],
                                                   self.bars.get_latest_bar_datetime(s), profit)
                     self.event.put(order_close)
-            for order in self.order[(self.order['status'] == OrderStatus.HOLDING.value) & (
-                    self.order['type'] == OrderType.SELL.value)].iterrows():
+            for order in self.order[(self.order['status'] == OrderStatus.HOLDING) & (
+                    self.order['type'] == OrderType.SELL)].iterrows():
                 stoploss = order[-1]['stoploss']
                 profit = order[-1]['takeprofit']
                 if (high - self.spread >= stoploss):
-                    order_close = OrderCloseEvent(s, OrderType.SELL.value, order[0],
+                    order_close = OrderCloseEvent(s, OrderType.SELL, order[0],
                                                   self.bars.get_latest_bar_datetime(s), stoploss - self.spread)
                     self.event.put(order_close)
                 if (low <= profit - self.spread):
-                    order_close = OrderCloseEvent(s, OrderType.SELL.value, order[0],
+                    order_close = OrderCloseEvent(s, OrderType.SELL, order[0],
                                                   self.bars.get_latest_bar_datetime(s), profit)
                     self.event.put(order_close)
 
@@ -212,8 +213,8 @@ class Portfolio(object):
         Output the equity and order variables to CSV file.
         :return:
         """
-        self.equity.to_csv('D:\PythonCode\Forex_AlgoTrading\Equity_%s.csv' % (self.strategy_id))
-        self.order.to_csv('D:\PythonCode\Forex_AlgoTrading\Order_%s.csv' % (self.strategy_id))
+        self.equity.to_csv(self.csv_dir+'Equity_%s.csv' % (self.strategy_id))
+        self.order.to_csv(self.csv_dir+'Order_%s.csv' % (self.strategy_id))
 
     def sharp(self):
         """
@@ -249,10 +250,10 @@ class Portfolio(object):
         total_return = (all_profit / self.init_captical - 1) * 100
         drawdown, max_dd, dd_duration = self.drawdown()
         max_drawdown = max_dd
-        buy_order_number = len(self.order[self.order['type'] == OrderType.BUY.value].index)
-        sell_order_number = len(self.order[self.order['type'] == OrderType.SELL.value].index)
-        buy_order_profit = self.order[self.order['type'] == OrderType.BUY.value]['mount'].sum()
-        sell_order_profit = self.order[self.order['type'] == OrderType.SELL.value]['mount'].sum()
+        buy_order_number = len(self.order[self.order['type'] == OrderType.BUY].index)
+        sell_order_number = len(self.order[self.order['type'] == OrderType.SELL].index)
+        buy_order_profit = self.order[self.order['type'] == OrderType.BUY]['mount'].sum()
+        sell_order_profit = self.order[self.order['type'] == OrderType.SELL]['mount'].sum()
         proporty = (
                            len(self.order[self.order['mount'] >= 0].index)
                            / len(self.order.index)

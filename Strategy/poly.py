@@ -28,10 +28,10 @@ class Poly(Strategy):
         self.commission = commission
 
     def On_Bars(self, event):
-        if event.type == EventType.MARKET.value:
+        if event.type == EventType.MARKET:
             for s in self.symbol_list:
-                buy_number = self.portfolio.holding_order_count(OrderType.BUY.value)
-                sell_number = self.portfolio.holding_order_count(OrderType.SELL.value)
+                buy_number = self.portfolio.holding_order_count(OrderType.BUY)
+                sell_number = self.portfolio.holding_order_count(OrderType.SELL)
                 close = self.bars.get_latest_bars_values(s, 'Close', self.para_dict['period'] + 1)[0:-1]
                 if (len(close) == self.para_dict['period']):
                     index = np.arange(len(close))
@@ -46,8 +46,8 @@ class Poly(Strategy):
                         openprice = self.bars.get_latest_bar_value(s, 'Open')
                         stoploss = openprice - self.stoploss * self.point
                         takeprofit = openprice + self.para_dict['takeprofit'] * self.point
-                        order = OrderSendEvent(s, OrderType.BUY.value, 1, stoploss, takeprofit,
-                                               self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING.value,
+                        order = OrderSendEvent(s, OrderType.BUY, 1, stoploss, takeprofit,
+                                               self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING,
                                                openprice, self.spread)
                         self.events.put(order)
 
@@ -56,8 +56,8 @@ class Poly(Strategy):
                         openprice = self.bars.get_latest_bar_value(s, 'Open')
                         stoploss = openprice + self.stoploss * self.point
                         takeprofit = openprice - self.para_dict['takeprofit'] * self.point
-                        order = OrderSendEvent(s, OrderType.SELL.value, 1, stoploss, takeprofit,
-                                               self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING.value,
+                        order = OrderSendEvent(s, OrderType.SELL, 1, stoploss, takeprofit,
+                                               self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING,
                                                openprice, self.spread)
                         self.events.put(order)
 
@@ -65,7 +65,7 @@ class Poly(Strategy):
                     if poly1_div > 0 and poly2_div < 0:
                         closeprice = self.bars.get_latest_bar_value(s, 'Open')
                         index = self.portfolio.all_holding_buy_orders().index[-1]
-                        order = OrderCloseEvent(s, OrderType.BUY.value, index, self.bars.get_latest_bar_datetime(s),
+                        order = OrderCloseEvent(s, OrderType.BUY, index, self.bars.get_latest_bar_datetime(s),
                                                 closeprice)
                         self.events.put(order)
 
@@ -73,7 +73,7 @@ class Poly(Strategy):
                     if poly1_div < 0 and poly2_div > 0:
                         closeprice = self.bars.get_latest_bar_value(s, 'Open') + self.spread
                         index = self.portfolio.all_holding_sell_orders().index[-1]
-                        order = OrderCloseEvent(s, OrderType.SELL.value, index, self.bars.get_latest_bar_datetime(s),
+                        order = OrderCloseEvent(s, OrderType.SELL, index, self.bars.get_latest_bar_datetime(s),
                                                 closeprice)
                         self.events.put(order)
 
@@ -84,10 +84,10 @@ if __name__ == '__main__':
     init_captial = 10000.0
     heartbeat = 0
     start_time = '2018.01.01'
-    end_time = '2018.8.1'
+    end_time = '2018.08.01'
     #define the parameters used for optimization
-    takeprofit = [1000, 1500, 2000, 2500]
-    period = [15, 20, 25, 35, 40, 45, 50, 55]
+    takeprofit = [1000, 1500, 2000]
+    period = [15, 20, 25, 35, 40]
     strat_params_list = list(product(
         takeprofit, period
     ))

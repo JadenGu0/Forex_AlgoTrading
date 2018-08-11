@@ -44,7 +44,7 @@ class Backtest(object):
         self.data_handler = self.data_handler_cls(self.events, self.csv_dir, self.symbol_list, self.start_date,
                                                   self.end_date)
         self.portfolio = self.portfolio_cls(self.data_handler, self.events, self.initial_capital, self.start_date,
-                                            self.strategy_id, self.spread, self.commission)
+                                            self.strategy_id, self.spread, self.commission,self.csv_dir)
         self.strategy = self.strategy_cls(self.data_handler, self.events, self.portfolio, self.spread, self.commission)
         self.plot = self.plot_cls(self.csv_dir, self.portfolio, self.strategy_id)
 
@@ -67,16 +67,16 @@ class Backtest(object):
                     break
                 else:
                     if event is not None:
-                        if event.type == EventType.MARKET.value:
+                        if event.type == EventType.MARKET:
                             self.strategy.On_Bars(event)
                             self.portfolio.update_balance(event)
                             self.portfolio.order_check(event)
-                        elif event.type == EventType.ORDER_SEND.value:
+                        elif event.type == EventType.ORDER_SEND:
                             self.portfolio.update_order(event)
-                        elif event.type == EventType.ORDER_CLOSE.value:
+                        elif event.type == EventType.ORDER_CLOSE:
                             self.portfolio.update_order(event)
                             self.portfolio.update_euity(event)
-                        elif event.type == EventType.ORDER_MODIFY.value:
+                        elif event.type == EventType.ORDER_MODIFY:
                             self.portfolio.update_order(event)
             time.sleep(self.heartbeat)
 
@@ -127,7 +127,7 @@ class Grid_Search(object):
         self.data_handler = self.data_handler_cls(self.events, self.csv_dir, self.symbol_list, self.start_date,
                                                   self.end_date)
         self.portfolio = self.portfolio_cls(self.data_handler, self.events, self.initial_capital, self.start_date,
-                                            self.strategy_id, self.spread, self.commission)
+                                            self.strategy_id, self.spread, self.commission,self.csv_dir)
         self.strategy = self.strategy_cls(self.data_handler, self.events, self.portfolio, self.spread, self.commission,
                                           sp)
         self.plot = self.plot_cls(self.csv_dir, self.portfolio, self.strategy_id)
@@ -150,16 +150,16 @@ class Grid_Search(object):
                     break
                 else:
                     if event is not None:
-                        if event.type == EventType.MARKET.value:
+                        if event.type == EventType.MARKET:
                             self.strategy.On_Bars(event)
                             self.portfolio.update_balance(event)
                             self.portfolio.order_check(event)
-                        elif event.type == EventType.ORDER_SEND.value:
+                        elif event.type == EventType.ORDER_SEND:
                             self.portfolio.update_order(event)
-                        elif event.type == EventType.ORDER_CLOSE.value:
+                        elif event.type == EventType.ORDER_CLOSE:
                             self.portfolio.update_order(event)
                             self.portfolio.update_euity(event)
-                        elif event.type == EventType.ORDER_MODIFY.value:
+                        elif event.type == EventType.ORDER_MODIFY:
                             self.portfolio.update_order(event)
             time.sleep(self.heartbeat)
 

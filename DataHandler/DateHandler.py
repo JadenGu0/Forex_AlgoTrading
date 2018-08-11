@@ -1,5 +1,4 @@
 # encoding=utf8
-# 封装HataHandler类，该类用于处理历史和实时数据
 
 from abc import ABCMeta, abstractmethod
 import pandas as pd

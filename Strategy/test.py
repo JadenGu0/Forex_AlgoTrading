@@ -27,32 +27,32 @@ class MA_Cross(Strategy):
         self.commission = commission
 
     def On_Bars(self, event):
-        if event.type == EventType.MARKET.value: #receive the new bar data
+        if event.type == EventType.MARKET: #receive the new bar data
             for s in self.symbol_list:
                 long_ma = self.bars.MA(s, self.long_period, 1) # calculate the ma valued of the symbols in symbol list.
                 short_ma = self.bars.MA(s, self.short_period, 1)
-                if (short_ma > long_ma) and self.portfolio.holding_order_count(OrderType.BUY.value) == 0:
+                if (short_ma > long_ma) and self.portfolio.holding_order_count(OrderType.BUY) == 0:
                     openprice = self.bars.get_latest_bar_value(s, 'Open')
                     stoploss = openprice - 0.00001 * 200
                     takeprofit = openprice + 0.00001 * 200
                     #define the buy order event instance
-                    order = OrderSendEvent(s, OrderType.BUY.value, 1, stoploss, takeprofit,
-                                           self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING.value, openprice,
+                    order = OrderSendEvent(s, OrderType.BUY, 1, stoploss, takeprofit,
+                                           self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING, openprice,
                                            self.spread)
                     #put the buy order event into the queue
                     self.events.put(order)
-                if (short_ma < long_ma) and self.portfolio.holding_order_count(OrderType.SELL.value) == 0:
+                if (short_ma < long_ma) and self.portfolio.holding_order_count(OrderType.SELL) == 0:
                     openprice = self.bars.get_latest_bar_value(s, 'Open')
                     stoploss = openprice + 0.00001 * 200
                     takeprofit = openprice - 0.00001 * 200
-                    order = OrderSendEvent(s, OrderType.SELL.value, 1, stoploss, takeprofit,
-                                           self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING.value, openprice,
+                    order = OrderSendEvent(s, OrderType.SELL, 1, stoploss, takeprofit,
+                                           self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING, openprice,
                                            self.spread)
                     self.events.put(order)
 
 
 if __name__ == '__main__':
-    csv_dir = 'D:\PythonCode\Forex_AlgoTrading\\'
+    csv_dir = 'D:\Github\Forex_AlgoTrading\\'
     symbol_list = ['EURUSD_15M']
     init_captial = 10000.0
     heartbeat = 0
