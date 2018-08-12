@@ -57,7 +57,7 @@ class Backtest(object):
             i += 1
             if self.data_handler.continue_backtest == True:
                 self.data_handler.update_bars()
-                print(self.data_handler.get_latest_bar_datetime(self.symbol_list[0]))
+                #print(self.data_handler.get_latest_bar_datetime(self.symbol_list[0]))
             else:
                 break
             while True:

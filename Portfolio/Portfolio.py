@@ -13,8 +13,8 @@ class Portfolio(object):
     The class is used for record the equity ,drawdown,update order info during the backtest operation.
     """
 
-    def __init__(self, bars, event, init_captical, startdate, strategy_id, spread, commission,csv_dir):
-        self.csv_dir=csv_dir
+    def __init__(self, bars, event, init_captical, startdate, strategy_id, spread, commission, csv_dir):
+        self.csv_dir = csv_dir
         self.startdate = startdate
         self.bars = bars
         self.symbol_list = bars.symbol_list
@@ -111,18 +111,18 @@ class Portfolio(object):
             if (old_order['type'] == OrderType.BUY):
                 mount = ((event.closeprice - old_order['openprice']) * old_order['lot'] * 100000 - old_order[
                     'lot'] * self.commission)
-                self.order['mount'][event.index] = mount
-                self.order['closeprice'][event.index] = event.closeprice
-                self.order['closetime'][event.index] = event.closetime
-                self.order['status'][event.index] = OrderStatus.CLOSED
+                self.order.loc[event.index, 'mount'] = mount
+                self.order.loc[event.index, 'closeprice'] = event.closeprice
+                self.order.loc[event.index, 'closetime'] = event.closetime
+                self.order.loc[event.index, 'status'] = OrderStatus.CLOSED
 
             if (old_order['type'] == OrderType.SELL):
                 mount = ((old_order['openprice'] - event.closeprice) * old_order['lot'] * 100000 - old_order[
                     'lot'] * self.commission)
-                self.order['mount'][event.index] = mount
-                self.order['closeprice'][event.index] = event.closeprice
-                self.order['closetime'][event.index] = event.closetime
-                self.order['status'][event.index] = OrderStatus.CLOSED
+                self.order.loc[event.index, 'mount'] = mount
+                self.order.loc[event.index, 'closeprice'] = event.closeprice
+                self.order.loc[event.index, 'closetime'] = event.closetime
+                self.order.loc[event.index, 'status'] = OrderStatus.CLOSED
 
     def all_holding_orders(self, event, type):
         """
@@ -213,8 +213,8 @@ class Portfolio(object):
         Output the equity and order variables to CSV file.
         :return:
         """
-        self.equity.to_csv(self.csv_dir+'Equity_%s.csv' % (self.strategy_id))
-        self.order.to_csv(self.csv_dir+'Order_%s.csv' % (self.strategy_id))
+        self.equity.to_csv(self.csv_dir + 'Equity_%s.csv' % (self.strategy_id))
+        self.order.to_csv(self.csv_dir + 'Order_%s.csv' % (self.strategy_id))
 
     def sharp(self):
         """

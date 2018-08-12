@@ -36,8 +36,9 @@ class OrderSendEvent(Event):
         self.openprice = openprice
         self.spread = spread
         self.return_list = [self.symbol, self.lot, self.order_type, ]
+        self.__print_order()
 
-    def print_order(self):
+    def __print_order(self):
         """
         Output the order info
         """
@@ -59,8 +60,9 @@ class OrderCloseEvent(Event):
         self.index = index
         self.closetime = closetime
         self.closeprice = closeprice
+        self.__print_order()
 
-    def print_order(self):
+    def __print_order(self):
         """
         Output order info
         """
