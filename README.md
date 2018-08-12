@@ -14,13 +14,13 @@ You can also use requirement file to install the packages required,but you need 
 
 ## QuickStart
 ### About Event Engine
-There are several typed if event are defined as follow:
+There are several types of events defined as follow:
 1.  **MarketEvent** should be put into queue when new bar data received.
-2.  **OrderSendEvent**should be put into queue when new order created.
-3.  **OrderCloseEvent**should be put into queue when the order is closed.
-4.  **OrderModifyEvent**should be put into queue when the order is modified.\
+2.  **OrderSendEvent** should be put into queue when new order created.
+3.  **OrderCloseEvent** should be put into queue when the order is closed.
+4.  **OrderModifyEvent** should be put into queue when the order is modified.
 
-You can define your own event types in Event.Event.py,after that you need to bound the callback function in Backtest.Backtest.py like this:
+You can define your own event type in **Event\Event.py**,after that you need to bound the callback function in **Backtest\Backtest.py** like this:
 ```angular2html
 if event.type == EventType.MARKET:
     self.strategy.On_Bars(event)
@@ -35,7 +35,7 @@ elif event.type == EventType.ORDER_MODIFY:
     self.portfolio.update_order(event)
 ```
 ### Demo code for startegy backtest
-The following code implements a simple moving average cross startegy:
+The following code implements a simple moving average cross strategy:
 ```angular2html
 # encoding=utf-8
 
@@ -107,9 +107,22 @@ if __name__ == '__main__':
 The graph including the equity and drawdown curve is shown after the backtest is done.\
 ![Graph for MA Cross](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/MA_Cross.png)\
 There is another graph from my own strategy.\
-![Graph for Trend Strategy](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Trend.png)
-
-You need to define your startegy class inheriting from Strategy and rewrite the method **On_Bars** where you should implement you  logics for sending the order,modifying the order or closing the orders.
+![Graph for Trend Strategy](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Trend.png)\
+The statistic also be printed after the backtest.
+```angularjs
+[('Total Profit', '2040.00'),
+ ('Sharp Ration', '1.44'),
+ ('Max Drawdown', '1049'),
+ ('Buy Number', '50'),
+ ('Buy Order Profit', '510'),
+ ('Sell Number', '47'),
+ ('Sell Order Profit', '1209'),
+ ('Win Rate', '55.67%'),
+ ('profit_factor', '1.20'),
+ ('Std of Order Profit', '196.65'),
+ ('Mean of Order Profit', '17.73')]
+```
+You need to define your startegy class inheriting from Strategy and rewrite the method **On_Bars** where you should implement your logic for sending the order,modifying the order or closing the order.
  ### Deme code for parameters optimization
 ```angular2html
 if __name__ == '__main__':
@@ -137,7 +150,7 @@ if __name__ == '__main__':
     )
     optimization.parameter_optimization()
 ```
-Comparing to the demo code for strategy backtest,we create a instance of Grid_Search and do the iteration using the parameters groups created by product.The parameters list,sharp ration and equity will be stored in CSV file after optimization done.\
+Comparing to the demo code of strategy backtest,we create a instance of Grid_Search and do the iteration using the parameters groups created by product.The parameters list,sharp ration and equity will be stored in CSV file after optimization done.\
 You can refer to the complete code in [poly.py](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Strategy/poly.py)
 ## Things need to be done
 1.  API for drawing the heatmap of optimization reaults.
