@@ -53,7 +53,7 @@ class MA_Cross(Strategy):
 
 if __name__ == '__main__':
     csv_dir = 'D:\Github\Forex_AlgoTrading\\'
-    symbol_list = ['EURUSD_15M']
+    symbol_list = ['EURUSD_15M','USDCAD_15M']
     init_captial = 10000.0
     heartbeat = 0
     start_time = '2017.10.01'

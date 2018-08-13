@@ -35,22 +35,25 @@ class Portfolio(object):
         Get the init_captical and append to equity variable
         :return:
         """
+        # Creating initial equity dateframe using column list.
         new_data = pd.DataFrame([[self.startdate, self.init_captical, self.init_captical]],
                                 columns=self.equity_list)
         self.equity = self.equity.append(new_data, ignore_index=True)
 
     def update_euity(self, event):
         """
-        Update the equity of every MarketEvent
+        Update the equity of every MarketEvent,called when ORDER_CLOSE event happen.
         :return:
         """
         last_equity = self.equity.iloc[-1, :]['equity']
         mount = 0.0
         for s in self.symbol_list:
-            new_price = self.bars.get_latest_bar_value(s, 'Open')
-            mount += \
-                self.order[(self.order['status'] == OrderStatus.CLOSED) & (self.order['symbol'] == s)].iloc[-1:][
-                    'mount'].values[0]
+            try:
+                mount += \
+                    self.order[(self.order['status'] == OrderStatus.CLOSED) & (self.order['symbol'] == s)].iloc[-1:][
+                        'mount'].values[0]
+            except IndexError:
+                pass
         new_data = pd.DataFrame(
             [[self.bars.get_latest_bar_datetime(self.symbol_list[0]), last_equity + mount, last_equity + mount]],
             columns=self.equity_list)
@@ -184,7 +187,8 @@ class Portfolio(object):
             high = self.bars.get_latest_bar_value(s, 'High')
             for order in self.order[
                 (self.order['status'] == OrderStatus.HOLDING) & (
-                        self.order['type'] == OrderType.BUY)].iterrows():
+                        self.order['type'] == OrderType.BUY) &
+                (self.order['symbol']==s)].iterrows():
                 stoploss = order[-1]['stoploss']
                 profit = order[-1]['takeprofit']
                 if (low <= stoploss):
@@ -196,7 +200,8 @@ class Portfolio(object):
                                                   self.bars.get_latest_bar_datetime(s), profit)
                     self.event.put(order_close)
             for order in self.order[(self.order['status'] == OrderStatus.HOLDING) & (
-                    self.order['type'] == OrderType.SELL)].iterrows():
+                    self.order['type'] == OrderType.SELL) &
+                    (self.order['symbol']==s)].iterrows():
                 stoploss = order[-1]['stoploss']
                 profit = order[-1]['takeprofit']
                 if (high - self.spread >= stoploss):
