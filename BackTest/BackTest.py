@@ -6,7 +6,7 @@ from __future__ import print_function
 from Queue import Queue, Empty
 import time
 from Enums.Enum import EventType
-
+from Error.Error import EquityError
 
 class Backtest(object):
     """
@@ -32,7 +32,7 @@ class Backtest(object):
         self.commission = commission
         self.plot_cls = plot
         self.events = Queue()
-
+        self.backtest=True
     def _generate_trading_instances(self):
         """
         Initialize the instance used for startegy backtest,including data_handler,portfolio and startegy
@@ -60,7 +60,7 @@ class Backtest(object):
                 #print(self.data_handler.get_latest_bar_datetime(self.symbol_list[0]))
             else:
                 break
-            while True:
+            while self.backtest:
                 try:
                     event = self.events.get(False)
                 except Empty:
@@ -68,14 +68,24 @@ class Backtest(object):
                 else:
                     if event is not None:
                         if event.type == EventType.MARKET:
-                            self.strategy.On_Bars(event)
-                            self.portfolio.update_balance(event)
-                            self.portfolio.order_check(event)
+                            try:
+                                self.strategy.On_Bars(event)
+                                self.portfolio.update_balance(event)
+                                self.portfolio.order_check(event)
+                            except EquityError:
+                                print('Not Engough Equity,Backtest Will be Stop...')
+                                self.backtest=False
+                                break
                         elif event.type == EventType.ORDER_SEND:
                             self.portfolio.update_order(event)
                         elif event.type == EventType.ORDER_CLOSE:
-                            self.portfolio.update_order(event)
-                            self.portfolio.update_euity(event)
+                            try:
+                                self.portfolio.update_order(event)
+                                self.portfolio.update_euity(event)
+                            except EquityError:
+                                print ('Not Engough Equity,Backtest Will be Stop...')
+                                self.backtest=False
+                                break
                         elif event.type == EventType.ORDER_MODIFY:
                             self.portfolio.update_order(event)
             time.sleep(self.heartbeat)

@@ -6,7 +6,7 @@ from Enums.Enum import OrderStatus, OrderType
 from Enums.Enum import EventType
 from Event.EventEngine import OrderSendEvent, OrderModifyEvent, OrderCloseEvent
 import pprint
-
+from Error.Error import EquityError
 
 class Portfolio(object):
     """
@@ -58,6 +58,8 @@ class Portfolio(object):
             [[self.bars.get_latest_bar_datetime(self.symbol_list[0]), last_equity + mount, last_equity + mount]],
             columns=self.equity_list)
         self.equity = self.equity.append(new_data, ignore_index=True)
+        if last_equity+mount <= 0:
+            raise EquityError
 
     def update_balance(self, event):
         """
@@ -83,6 +85,8 @@ class Portfolio(object):
                     columns=self.equity_list),
                 ignore_index=True
             )
+            if old_equity+mount <= 0:
+                raise EquityError
         else:
             self.equity = self.equity.append(
                 pd.DataFrame(

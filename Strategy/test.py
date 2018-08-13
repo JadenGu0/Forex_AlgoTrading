@@ -36,7 +36,7 @@ class MA_Cross(Strategy):
                     stoploss = openprice - 0.00001 * 200
                     takeprofit = openprice + 0.00001 * 200
                     #define the buy order event instance
-                    order = OrderSendEvent(s, OrderType.BUY, 1, stoploss, takeprofit,
+                    order = OrderSendEvent(s, OrderType.BUY, 10, stoploss, takeprofit,
                                            self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING, openprice,
                                            self.spread)
                     #put the buy order event into the queue
@@ -45,7 +45,7 @@ class MA_Cross(Strategy):
                     openprice = self.bars.get_latest_bar_value(s, 'Open')
                     stoploss = openprice + 0.00001 * 200
                     takeprofit = openprice - 0.00001 * 200
-                    order = OrderSendEvent(s, OrderType.SELL, 1, stoploss, takeprofit,
+                    order = OrderSendEvent(s, OrderType.SELL, 10, stoploss, takeprofit,
                                            self.bars.get_latest_bar_datetime(s), OrderStatus.HOLDING, openprice,
                                            self.spread)
                     self.events.put(order)
