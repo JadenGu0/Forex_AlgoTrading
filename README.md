@@ -105,9 +105,9 @@ if __name__ == '__main__':
 
 ```
 The graph including the equity and drawdown curve is shown after the backtest is done.\
-![Graph for MA Cross](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/MA_Cross.png)\
+![Graph for MA Cross](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/MA_Cross.png)\
 There is another graph from my own strategy.\
-![Graph for Trend Strategy](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Trend.png)\
+![Graph for Trend Strategy](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/Trend.png)\
 The statistic also be printed after the backtest.
 ```angularjs
 [('Total Profit', '2040.00'),
