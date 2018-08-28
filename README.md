@@ -152,6 +152,19 @@ if __name__ == '__main__':
 ```
 Comparing to the demo code of strategy backtest,we create a instance of Grid_Search and do the iteration using the parameters groups created by product.The parameters list,sharp ration and equity will be stored in CSV file after optimization done.\
 You can refer to the complete code in [poly.py](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/Strategy/poly.py)
+## WebForex
+The Web based on the backtest engine is available now,you can test your strategy online through:http://47.92.161.17:8000 \
+You can add a new strategy by post a form and input your startegy in code field and test it,after the test id done,you can refer to the result which including all the orders information equity curve and statistics.\
+![homepage](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/homepage.png)\
+All your strategys will be shown in strategy page.\
+![strategypage](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/strategy.png)\
+The backtest results will be shown in backtest page.\
+![backtest](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/backtest.png)\
+You can refer to detailed report.\
+![report](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/report.png)\
+You can refer to the error informations too.\
+![error](https://github.com/JadenGu0/Forex_AlgoTrading/blob/master/png/error.png)\
+The registration is not open yet,you can contact me by:gxy199172@126.com and get a account.
 ## Things need to be done
 1.  API for drawing the heatmap of optimization reaults.
 2.  API for connecting to OANDA platform.
